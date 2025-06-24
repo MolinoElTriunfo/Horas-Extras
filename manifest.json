@@ -1,0 +1,20 @@
+{
+  "name": "Calculadora de Horas Extras",
+  "short_name": "Horas Extras",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#004080",
+  "icons": [
+    {
+      "src": "https://raw.githubusercontent.com/MolinoElTriunfo/Horas-Extras/main/Favicon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://raw.githubusercontent.com/MolinoElTriunfo/Horas-Extras/main/Favicon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
