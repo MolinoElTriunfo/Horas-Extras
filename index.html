@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Calculadora de Horas Extras</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+  
+  <!-- Ícono para Android/Chrome -->
+  <link rel="icon" href="https://raw.githubusercontent.com/METSABENOTI/Horas-Extras/main/FAVICON.png" type="image/png">
+  
+  <!-- Ícono para iPhone/Safari -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Mi App">
+  <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/METSABENOTI/Horas-Extras/main/FAVICON.png">
+
+  
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f6fa;
+      margin: 0;
+      padding: 0;
+      color: #333;
+      width: 100vw;
+      overflow-x: hidden;
+      font-size: 26px;
+    }
+
+    .page-wrapper {
+      width: 100%;
+      margin: 0;
+      padding: 0 10px;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+    }
+
+    .card {
+      background: #ffffff;
+      border: 3px solid #cfd8dc;
+      border-radius: 14px;
+      padding: 40px 30px;
+      box-shadow: 0 6px 10px rgba(0,0,0,0.1);
+      width: 100%;
+    }
+
+    .card h2 {
+      font-size: 36px;
+      margin-bottom: 25px;
+      color: #004080;
+      border-bottom: 3px solid #c4dfff;
+      padding-bottom: 12px;
+    }
+
+    .sub-card {
+      background: #f9f9f9;
+      border-left: 6px solid #004080;
+      padding: 24px;
+      margin-top: 20px;
+      margin-bottom: 30px;
+      border-radius: 10px;
+    }
+
+    label {
+      display: block;
+      margin-top: 20px;
+      font-weight: 600;
+      color: #333;
+      font-size: 28px;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      padding: 18px;
+      margin-top: 10px;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+      font-size: 28px;
+    }
+
+    input[readonly] {
+      background-color: #e0e0e0;
+    }
+
+    input[type="checkbox"] {
+      margin-right: 12px;
+      transform: scale(1.8);
+    }
+
+    .asignacion-container {
+      display: none;
+    }
+
+    button {
+      margin-top: 30px;
+      padding: 20px 24px;
+      background-color: #d32f2f;
+      color: white;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      width: 100%;
+      font-size: 32px;
+    }
+
+    .btn-pdf:hover {
+      background-color: #a32121;
+      color: white;
+      border-color: #b71c1c;
+    }
+
+    .btn-excel:hover {
+      background-color: #81c784; /* Verde más vivo */
+      color: white;
+      border-color: #2e7d32;
+    }
+
+    .btn-png:hover {
+      background-color: #64b5f6; /* Celeste */
+      color: white;
+      border-color: #1565c0;
+    }
+
+    .resultado {
+      font-size: 28px;
+      line-height: 1.7;
+      color: #333;
+    }
+
+    .resultado strong {
+      color: #004080;
+    }
+
+    .input-with-prefix {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-with-prefix .prefix {
+      position: absolute;
+      left: 14px;
+      color: #555;
+      font-weight: bold;
+      font-size: 28px;
+    }
+
+    .input-with-prefix input {
+      padding-left: 40px;
+    }
+
+    .titulo-principal {
+      background-color: #004080;
+      color: white;
+      text-align: center;
+      border-left: 8px solid #002f5f;
+      border-radius: 14px;
+      margin-bottom: 40px;
+    }
+
+    .titulo-principal h1 {
+      margin: 0;
+      font-size: 52px;
+      color: white;
+      padding: 35px 10px;
+    }
+
+    .export-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-bottom: 10px;
+    }
+
+    .export-buttons button {
+      padding: 18px;
+      border-radius: 22px;
+      font-weight: bold;
+      font-size: 28px;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    .btn-excel {
+      background-color: #e8f5e9;
+      border: 3px solid #2e7d32;
+      color: #2e7d32;
+    }
+
+    .btn-pdf {
+      background-color: #ffebee;
+      border: 3px solid #c62828;
+      color: #c62828;
+    }
+
+    .btn-png {
+      background-color: #e3f2fd;
+      border: 3px solid #1565c0;
+      color: #1565c0;
+    }
+
+    #mensaje-error {
+      color: red;
+      font-size: 21px;
+      margin-top: 9px;
+    }
+
+    @media screen and (max-width: 480px) {
+      .titulo-principal h1 {
+        font-size: 44px;
+        padding: 28px 8px;
+      }
+
+      .card h2 {
+        font-size: 32px;
+      }
+
+      button, .export-buttons button {
+        font-size: 26px;
+        padding: 18px;
+      }
+
+      label, .resultado {
+        font-size: 26px;
+      }
+
+      input[type="number"] {
+        font-size: 26px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div style="text-align: center; margin-top: 30px;">
+    <img src="https://raw.githubusercontent.com/JoseGutierrez0109/Horas-Extras/main/1-7073475e.png"
+         alt="Logo METSA"
+         style="width: 250px; margin-bottom: 10px;">
+  </div>
+  <div class="page-wrapper">
+    <div class="card titulo-principal">
+      <h1>Calculadora de Horas Extras - METSA</h1>
+    </div>
+
+    <div class="container">
+      <div class="card">
+        <h2>Información principal</h2>
+        <form id="formulario">
+          <div class="sub-card">
+            <label for="sueldo">Sueldo Mensual:</label>
+            <div class="input-with-prefix">
+              <span class="prefix">S/</span>
+              <input type="number" id="sueldo" name="sueldo" step="0.01" min="0" required>
+            </div>
+            <div id="mensaje-error"></div>
+
+            <label><input type="checkbox" id="tieneAsignacion" onchange="toggleAsignacion()"> Seleccione si posee asignación familiar</label>
+
+            <div id="asignacionContainer" class="asignacion-container">
+              <label for="asignacion">Asignación Familiar:</label>
+              <input type="number" id="asignacion" name="asignacion" value="113.00" readonly>
+            </div>
+          </div>
+
+          <h2>Horas Extras Laboradas</h2>
+          <div class="sub-card">
+            <label for="horas25">Horas al 25%:</label>
+            <input type="number" id="horas25" name="horas25" step="0.1" min="0">
+
+            <label for="horas35">Horas al 35%:</label>
+            <input type="number" id="horas35" name="horas35" step="0.1" min="0">
+
+            <label for="horas100">Horas Dobles (100%):</label>
+            <input type="number" id="horas100" name="horas100" step="0.1" min="0">
+          </div>
+
+          <button type="button" onclick="calcularHorasExtras()">
+            <i class="fas fa-calculator" style="margin-right: 8px;"></i> Calcular Horas Extras
+          </button>
+        </form>
+      </div>
+
+      <div class="card" style="border-left: 5px solid #004080; background-color: #eef5ff;">
+        <h2 style="margin-bottom: 10px;">Consideraciones a tener en Cuenta: </h2>
+        <ul style="margin: 0 0 10px 20px; color: #333; font-size: 30px; line-height: 1.6;">
+          <li>Primeras 2 horas: <strong>+25%</strong></li>
+          <li>Desde la 3ra hora: <strong>+35%</strong></li>
+          <li>Día de Descanso y Feriados: <strong>+100%</strong></li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h2>Resultados del cálculo</h2>
+        <div class="resultado" id="resultado">
+          <em>Los resultados aparecerán aquí después del cálculo.</em>
+        </div>
+      </div>
+
+      <div class="export-buttons">
+        <button class="btn-excel" onclick="descargarExcel()">📗 Excel</button>
+        <button class="btn-pdf" onclick="descargarPDF()">📕 PDF</button>
+        <button class="btn-png" onclick="descargarPNG()">📘 PNG</button>
+      </div>
+    </div>
+  </div>
+
+    <p style="text-align: center; margin-top: 20px;">
+      Elaborado por RRHH
+    </p>
+
+  <script>
+    function toggleAsignacion() {
+      const checkbox = document.getElementById("tieneAsignacion");
+      const asignacionDiv = document.getElementById("asignacionContainer");
+      const asignacionInput = document.getElementById("asignacion");
+      asignacionDiv.style.display = checkbox.checked ? "block" : "none";
+      asignacionInput.value = checkbox.checked ? "113.00" : "0.00";
+    }
+
+   function calcularHorasExtras() {
+      const sueldo = parseFloat(document.getElementById('sueldo').value) || 0;
+      const mensajeError = document.getElementById('mensaje-error');
+
+      if (sueldo < 1000) {
+        mensajeError.textContent = "⚠️ El sueldo mensual no puede ser menor a S/ 1000.";
+        document.getElementById('resultado').innerHTML = "";
+        return;
+      } else {
+        mensajeError.textContent = "";
+      }
+
+      const tieneAsignacion = document.getElementById('tieneAsignacion').checked;
+      const asignacion = tieneAsignacion ? 113.00 : 0;
+      const horas25 = parseFloat(document.getElementById('horas25').value) || 0;
+      const horas35 = parseFloat(document.getElementById('horas35').value) || 0;
+      const horas100 = parseFloat(document.getElementById('horas100').value) || 0;
+
+      const totalHoras = horas25 + horas35 + horas100;
+      const valorHora = (sueldo + asignacion) / 240;
+      const monto25 = valorHora * 1.25 * horas25;
+      const monto35 = valorHora * 1.35 * horas35;
+      const monto100 = valorHora * 2 * horas100;
+      const total = monto25 + monto35 + monto100;
+
+      const mostrarDetalles = totalHoras > 0;
+
+      document.getElementById('resultado').innerHTML = `
+        <div style="text-align: center; margin-bottom: 20px;">
+          <p style="font-size: 20px; font-weight: bold; color: #004080; margin: 0;">Monto Total por Horas Extras</p>
+          <p style="font-size: 42px; font-weight: bold; color: #d32f2f; margin: 5px 0;">S/ ${total.toFixed(2)}</p>
+          <p style="font-size: 16px; color: #333; margin-top: 5px;"><strong>Total de horas extras:</strong> ${totalHoras.toFixed(1)} horas</p>
+        </div>
+        <hr>
+        <div style="display: flex; justify-content: space-between; margin: 6px 0;">
+          <strong>Valor por hora:</strong>
+          <span>S/ ${valorHora.toFixed(2)}</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin: 6px 0;">
+          <strong>Monto Horas al 25%:</strong>
+          <span>S/ ${monto25.toFixed(2)}</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin: 6px 0;">
+          <strong>Monto Horas al 35%:</strong>
+          <span>S/ ${monto35.toFixed(2)}</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin: 6px 0;">
+          <strong>Monto Horas Dobles (100%):</strong>
+          <span>S/ ${monto100.toFixed(2)}</span>
+        </div>
+        ${mostrarDetalles ? `
+          <hr>
+          <div style="margin-top: 15px;">
+            <p style="font-size: 12px; font-weight: bold;">🧾 Detalle del cálculo:</p>
+            <ul style="font-size: 11px; padding-left: 20px; margin: 0; list-style-type: disc;">
+              <li>Monto por Horas Extras al 25%: ${horas25.toFixed(1)} h × S/ ${valorHora.toFixed(2)} × 1.25 = S/ ${monto25.toFixed(2)}</li>
+              <li>Monto por Horas Extras al 35%: ${horas35.toFixed(1)} h × S/ ${valorHora.toFixed(2)} × 1.35 = S/ ${monto35.toFixed(2)}</li>
+              <li>Monto por Horas Extras al 100%: ${horas100.toFixed(1)} h × S/ ${valorHora.toFixed(2)} × 2.00 = S/ ${monto100.toFixed(2)}</li>
+            </ul>
+          </div>
+        ` : ''}
+      `;
+    }
+
+
+
+    async function descargarPDF() {
+      const { jsPDF } = window.jspdf;
+      const resultado = document.getElementById('resultado');
+      const canvas = await html2canvas(resultado);
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF();
+      pdf.addImage(imgData, 'PNG', 10, 10, 190, 0);
+      pdf.save("resultado_horas_extras.pdf");
+    }
+
+    async function descargarPNG() {
+      const resultado = document.getElementById('resultado');
+      const canvas = await html2canvas(resultado);
+      const link = document.createElement('a');
+      link.href = canvas.toDataURL();
+      link.download = 'resultado_horas_extras.png';
+      link.click();
+    }
+
+    function descargarExcel() {
+      const tabla = document.getElementById('resultado');
+      const datos = tabla.innerText;
+      const blob = new Blob([datos], { type: 'application/vnd.ms-excel' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'resultado_horas_extras.xls';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+  </script>
+</body>
+</html>
